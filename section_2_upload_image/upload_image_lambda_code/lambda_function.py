@@ -40,17 +40,18 @@ def lambda_handler(event, context):
             for detectedObject in output:
                 # information for put_item function:
                 # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb.html#DynamoDB.Client.put_item
-                item1 = {"M": {
-                      "label": {"S": str(detectedObject[0])},
-                      "accuracy": {"N": str(detectedObject[1])},
-                      "rectangle": {"M": {"height": {"N": str(detectedObject[5])}, "left": {"N": str(detectedObject[2])}, "top": {"N": str(detectedObject[3])}, "width": {"N": str(detectedObject[4])}}}
-                    }}
-                
+                # item1 = {"M": {
+                #       "label": {"S": str(detectedObject[0])},
+                #       "accuracy": {"N": str(detectedObject[1])},
+                #       "rectangle": {"M": {"height": {"N": str(detectedObject[5])}, "left": {"N": str(detectedObject[2])}, "top": {"N": str(detectedObject[3])}, "width": {"N": str(detectedObject[4])}}}
+                #     }}
+                # tmp.append(item1)
+                item1 = {"S": str(detectedObject[0])}
                 tmp.append(item1)
             print(tmp)
             item2 = {
               "url": {"S": url},
-              "data":{"L" : tmp}
+              "tag":{"L" : tmp}
             }    
                     
             dynamodb.put_item(TableName=TABLE_NAME, Item=item2)
