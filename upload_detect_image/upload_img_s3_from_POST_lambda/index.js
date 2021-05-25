@@ -1,5 +1,6 @@
 // can only upload jpg file
-/*  Base64 encoded String for image is send in request body.
+/*  Base64 encoded String for image is send in POST request body.
+* in format {"based64string":"the string"}
 */
 
 const AWS = require('aws-sdk');

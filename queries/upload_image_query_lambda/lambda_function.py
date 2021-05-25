@@ -5,7 +5,8 @@ import boto3
 import base64
 
 """
-front end have to parse image to byte/string as demonstrated in assignment 1 client
+Base64 encoded String for image is send in POST request body.
+in format {"based64string":"the string"}
 """
 
 def lambda_handler(event, context):
