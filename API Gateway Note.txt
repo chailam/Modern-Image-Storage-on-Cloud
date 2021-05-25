@@ -1,0 +1,36 @@
+Notes for API Gateway:
+
+hierarchy of API:
+/
+	/query (DELETE,POST,PUT)
+		/upload-image(POST)
+
+
+For all API method, untick "Use Lambda Proxy integration", in the "Mapping Template", tick "When there are no templates defined (recommended)",
+set content type as "application/json" and set the following template:
+	#set($allParams = $input.params())
+	{"body-json" : $input.json('$'),
+	"http-method" : "$context.httpMethod"}
+
+
+To get the code works, the request body should use "url" and "tags" as name, as shown in below, 
+because the code in lambda has been coded to accept these parameters
+
+{
+    "tags": ["person","laptop"]
+}
+
+{
+    "url":"the url string",
+    "tags": ["person","laptop"]
+}
+
+{
+    "url":"the url string"
+}
+
+
+The permissions for the lambda function has been uploaded, named folder "lambda permission".
+The upload image resources use lambda function "upload-query",
+where the other resources use the lambda function "query"
+
