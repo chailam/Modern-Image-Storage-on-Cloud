@@ -3,14 +3,20 @@ Notes for API Gateway:
 hierarchy of API:
 /
 	/query (DELETE,POST,PUT)
-		/upload-image(POST)
+	/upload-image(POST)
+	/upload-s3 (POST)
 
 
-For all API method, untick "Use Lambda Proxy integration", in the "Mapping Template", tick "When there are no templates defined (recommended)",
+For all API method (except upload-s3), untick "Use Lambda Proxy integration", in the "Mapping Template", tick "When there are no templates defined (recommended)",
 set content type as "application/json" and set the following template:
 	#set($allParams = $input.params())
 	{"body-json" : $input.json('$'),
 	"http-method" : "$context.httpMethod"}
+
+
+for upload-s3, tick "Use Lambda Proxy integration", the request body should be 
+{"based64string":"the base string"}
+for testing purpose, base64encodestring can be retrieved from https://www.base64-image.de/
 
 
 To get the code works, the request body should use "url" and "tags" as name, as shown in below, 
@@ -27,6 +33,10 @@ because the code in lambda has been coded to accept these parameters
 
 {
     "url":"the url string"
+}
+
+{
+    "based64string": "the base string"
 }
 
 
