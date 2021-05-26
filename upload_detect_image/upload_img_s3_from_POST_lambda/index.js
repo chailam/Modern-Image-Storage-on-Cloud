@@ -22,6 +22,7 @@ exports.handler = (event, context, callback) => {
       "Body": decodeBufferImage,
       "Bucket": "fit5225-uploaded-image",
       "Key": filePath,
+      "ACL" : "public-read",
       "ContentType " :"mime/jpg"   //fileMime 
       };
       
