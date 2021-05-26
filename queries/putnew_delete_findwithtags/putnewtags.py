@@ -2,7 +2,7 @@ import boto3
 from botocore.exceptions import ClientError
 import json
 
-# Helper class to convert a DynamoDB item to JSON.
+# Helper class to convert a DynamoDB item to JSON. https://github.com/aws-samples/aws-code-snippets/blob/master/Python/DynamoDB.md
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, decimal.Decimal):
