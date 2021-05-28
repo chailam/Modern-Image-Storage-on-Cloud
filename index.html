@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Group 38 Image Detection</title>
+    <!-- Add some CSS to change client UI -->
+    <style>
+    
+    body, h1, h2, h3, h4, h5, h6  {
+        background-color: #232F3E;
+        color: white;
+        }
+
+    a:link, a:active, a:visited {
+        color: gray;
+        background-color: transparent;
+        text-decoration: none;
+        }
+
+    a:hover {
+        color: white;
+        background-color: transparent;
+        text-decoration: underline;
+        }
+
+    label, p {
+        color: white;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 20px;
+        margin-left: 40px;
+    }
+    button {
+        color: black;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 20px;
+        margin-left: 40px;
+        }
+     input {
+        color: #232F3E;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 20px;
+        margin-left: 20px;
+        }
+    </style>
+    <script>
+         // Call API to upload image to S3
+         var uploadImageToS3 = (base64String)=>{
+            // instantiate a headers object
+            var myHeaders = new Headers();
+            // add content type header to object
+            myHeaders.append("Content-Type", "application/json");
+            // using built in JSON utility package turn object to string and store in a variable
+            var raw = JSON.stringify({"based64string":base64String});
+            let theResult;
+            // create a JSON object with parameters for API call and store in a variable
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+            // make API call with parameters and use promises to get response
+            fetch("https://r3x3kiq5vb.execute-api.us-east-1.amazonaws.com/prod/upload-s3", requestOptions)
+            .then(response => response.text())
+            .then((result) => {
+                theResult = JSON.parse(result).body
+                document.getElementById("uploadImageToS3").innerHTML = " Result for Upload Image To S3: "  + "<br />" +　theResult 
+                console.log(JSON.parse(result).body)
+            })
+            .catch(error => console.log('error', error));
+        }
+
+
+        // Call API to upload image to Find images based on the tags
+        var findImagesBasedOnTags = (tag)=>{
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            // process the tag value
+            var tagArray = tag.split(",");
+            var raw = JSON.stringify({"tags":tagArray});
+            let theResult;
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+            fetch("https://r3x3kiq5vb.execute-api.us-east-1.amazonaws.com/prod/query", requestOptions)
+            .then(response => response.text())
+            .then((result) => {
+                theResult = JSON.parse(result).body
+                document.getElementById("findImageBasedOnTags").innerHTML =  "Result for Find images based on the tags: " + "<br />" + theResult 
+                console.log(JSON.parse(result).body)
+            })
+            .catch(error => console.log('error', error));
+        }
+
+
+        // Call API to upload image to Find images based on the tags of an image
+        var findImageBasedOnTagsOfImage = (base64String)=>{
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            var raw = JSON.stringify({"based64string":base64String});
+            let theResult;
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+            fetch("https://r3x3kiq5vb.execute-api.us-east-1.amazonaws.com/prod/upload-image", requestOptions)
+            .then(response => response.text())
+            .then((result) => {
+                theResult = JSON.parse(result).body
+                document.getElementById("findImageBasedOnTagsOfImage").innerHTML = "Result for Find images based on the tags of an image:" + "<br />" + theResult ;
+                console.log(JSON.parse(result).body)
+            })
+            .catch(error => console.log('error', error));
+        }
+
+
+        // Call API to add extra tags to an image
+        var addExtraTagsToImage = (url, tag)=>{
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            var tagArray = tag.split(",");
+            var raw = JSON.stringify({"url":url,"tags":tagArray});
+            let theResult;
+            var requestOptions = {
+                method: 'PUT',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+            fetch("https://r3x3kiq5vb.execute-api.us-east-1.amazonaws.com/prod/query", requestOptions)
+            .then(response => response.text())
+            .then((result) => {
+                theResult = JSON.parse(result).body
+                document.getElementById("addExtraTagsToImage").innerHTML = "Result for Add extra tags to an image:" + "<br />" + theResult ;
+                console.log(JSON.parse(result).body)
+            })
+            .catch(error => console.log('error', error));
+        }
+
+
+        // Call API to delete an image
+        var deleteImage = (url)=>{
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            var raw = JSON.stringify({"url":url});
+            let theResult;
+            var requestOptions = {
+                method: 'DELETE',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+            fetch("https://r3x3kiq5vb.execute-api.us-east-1.amazonaws.com/prod/query", requestOptions)
+            .then(response => response.text())
+            .then((result) => {
+                theResult = JSON.parse(result).body
+                document.getElementById("deleteAnImage").innerHTML = "Result for Delete an image:" + "<br />"  + theResult ;
+                console.log(JSON.parse(result).body)
+            })
+            .catch(error => console.log('error', error));
+        }
+    
+
+    </script>
+</head>
+<body>
+    <h1>Group 38 Image Detection </h1>
+    <p style="text-align:left;"><a href="https://www.freecodecamp.org/">Sign-In</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://www.freecodecamp.org/">Sign-out</a></p>
+
+    <hr>
+
+    <!-- Upload Image To S3 -->
+    <h2> Upload Image To S3: </h2>
+    <form>
+        <label>Image Base64String :</label> <!-- to be modified to upload image code-->
+        <textarea id="base64StringS3"></textarea>
+        
+        
+        <button type="button" onclick="uploadImageToS3(document.getElementById('base64StringS3').value)">Upload To S3</button>
+    </form>
+    <h2 id="uploadImageToS3"></h2>
+
+    <hr>
+
+    <!-- Find images based on the tags -->
+    <h2> Find images based on the tags: </h2>
+    <form>
+        <label>Tag (split by comma) :</label>
+        <input type="text" id="findImageTag">
+        
+        <button type="button" onclick="findImagesBasedOnTags(document.getElementById('findImageTag').value)">Find Images From Tags</button>
+    </form>
+    <h2 id="findImageBasedOnTags"></h2>
+
+    <hr>
+
+    <!-- Find images based on the tags of an image -->
+    <h2> Find images based on the tags of an image: </h2>
+    <form>
+        <label>Image Base64String :</label>
+        <textarea id="base64StringImage"></textarea>
+        
+        <button type="button" onclick="findImageBasedOnTagsOfImage(document.getElementById('base64StringImage').value)">Find Images From Image </button>
+    </form>
+    <h2 id="findImageBasedOnTagsOfImage"></h2>
+
+    <hr>
+
+    <!-- Add extra tags to an image -->
+    <h2> Add extra tags to an image: </h2>
+    <form>
+        <label>URL :</label>
+        <input type="text" id="urlAddTag">
+        <label>Tag (split by comma) :</label>
+        <input type="text" id="tagAddTag">
+        
+        <button type="button" onclick="addExtraTagsToImage(document.getElementById('urlAddTag').value,document.getElementById('tagAddTag').value)">Add Tags</button>
+    </form>
+    <h2 id="addExtraTagsToImage"></h2>
+
+    <hr>
+
+    <!-- Delete an image -->
+    <h2> Delete an image </h2>
+    <form>
+        <label>URL :</label>
+        <input type="text" id="urlDeleteImage">
+        
+        <button type="button" onclick="deleteImage(document.getElementById('urlDeleteImage').value)">Delete Image</button>
+    </form>
+    <h2 id="deleteAnImage"></h2>
+
+</body>
+</html>
