@@ -64,7 +64,8 @@
             .then(response => response.text())
             .then((result) => {
                 theResult = JSON.parse(result)
-                document.getElementById("uploadImageToS3").innerHTML = " Location for Upload Image To S3: "  + "<br />" +　theResult.Location
+                console.log(theResult)
+                document.getElementById("uploadImageToS3").innerHTML = " Location for Uploaded Image in S3: "  + "<br />" +　theResult.Location
                 console.log(Object.values(theResult))
             })
             .catch(error => console.log('error', error));
@@ -79,6 +80,7 @@
             var tagArray = tag.split(",");
             var raw = JSON.stringify({"tags":tagArray});
             let theResult;
+            let theStatus;
             var requestOptions = {
                 method: 'POST',
                 headers: myHeaders,
@@ -89,8 +91,27 @@
             .then(response => response.text())
             .then((result) => {
                 theResult = JSON.parse(result).body
-                document.getElementById("findImageBasedOnTags").innerHTML =  "Result for Find images based on the tags: " + "<br />" + theResult 
-                console.log(JSON.parse(result).body)
+                theStatus = JSON.parse(result).statusCode
+                if (theStatus != 200){
+                    document.getElementById("findImageBasedOnTags").innerHTML =  "Error!" 
+                } else {
+                    document.getElementById("findImageBasedOnTags").innerHTML = " "
+                    theImgList = JSON.parse(theResult).links
+                        if (theImgList.length > 0){
+                            for (i = 0; theImgList.length > i; i++){
+                            var img = new Image(200, 200);
+                            img.src = theImgList[i];
+
+                            var place = document.getElementById("findImageBasedOnTags");
+                            place.appendChild(img);
+                            }
+                        } else {
+                            document.getElementById("findImageBasedOnTags").innerHTML = "No image found with these tags"
+                        }
+
+                    //document.getElementById("findImageBasedOnTags").innerHTML =  "Result for Find images based on the tags: " + "<br />" + theResult 
+                    console.log(JSON.parse(result).body)
+                }
             })
             .catch(error => console.log('error', error));
         }
@@ -112,7 +133,25 @@
             .then(response => response.text())
             .then((result) => {
                 theResult = JSON.parse(result).body
-                document.getElementById("findImageBasedOnTagsOfImage").innerHTML = "Result for Find images based on the tags of an image:" + "<br />" + theResult ;
+                theStatus = JSON.parse(result).statusCode
+                if (theStatus != 200){
+                    document.getElementById("findImageBasedOnTagsOfImage").innerHTML =  "Error!" 
+                } else {
+                    document.getElementById("findImageBasedOnTagsOfImage").innerHTML = " "
+                    theImgList = JSON.parse(theResult).links
+                        if (theImgList.length > 0){
+                            for (i = 0; theImgList.length > i; i++){
+                            var img = new Image(200, 200);
+                            img.src = theImgList[i];
+
+                            var place = document.getElementById("findImageBasedOnTagsOfImage");
+                            place.appendChild(img);
+                            }
+                        } else {
+                            document.getElementById("findImageBasedOnTagsOfImage").innerHTML = "No image found with these tags"
+                        }
+
+                }
                 console.log(JSON.parse(result).body)
             })
             .catch(error => console.log('error', error));
