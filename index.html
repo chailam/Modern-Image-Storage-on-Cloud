@@ -43,6 +43,32 @@
         }
     </style>
     <script>
+        // Function to encode image file
+        function encodeImageFileToUploadS3() {
+            var filesSelected = document.getElementById("inputFileToS3").files;
+            if (filesSelected.length > 0) {
+                var fileToLoad = filesSelected[0];
+                var fileReader = new FileReader();
+                var base64encoded;
+                var encodedImageString;
+                var typeImage;
+
+                fileReader.onload = function(fileLoadedEvent) {
+                    var srcData = fileLoadedEvent.target.result; // <--- data: base64
+                    var newImage = document.createElement('img');
+                    newImage.src = srcData;
+                
+                    base64encoded = newImage.outerHTML;
+                    encodedImageString = base64encoded.substring(base64encoded.indexOf(',')+1,base64encoded.indexOf('">'));
+                    typeImage = base64encoded.substring(base64encoded.indexOf(':')+1,base64encoded.indexOf(';')); // should be image/jpeg
+                    console.log(typeImage);
+                    uploadImageToS3(encodedImageString);
+                }
+                fileReader.readAsDataURL(fileToLoad);
+            }
+        }
+
+
          // Call API to upload image to S3
          var uploadImageToS3 = (base64String)=>{
             // instantiate a headers object
@@ -114,6 +140,33 @@
                 }
             })
             .catch(error => console.log('error', error));
+        }
+
+
+
+        // Function to encode image file
+        function encodeImageFileToFindTags() {
+            var filesSelected = document.getElementById("inputFileToFindTags").files;
+            if (filesSelected.length > 0) {
+                var fileToLoad = filesSelected[0];
+                var fileReader = new FileReader();
+                var base64encoded;
+                var encodedImageString;
+                var typeImage;
+
+                fileReader.onload = function(fileLoadedEvent) {
+                    var srcData = fileLoadedEvent.target.result; // <--- data: base64
+                    var newImage = document.createElement('img');
+                    newImage.src = srcData;
+                
+                    base64encoded = newImage.outerHTML;
+                    encodedImageString = base64encoded.substring(base64encoded.indexOf(',')+1,base64encoded.indexOf('">'));
+                    typeImage = base64encoded.substring(base64encoded.indexOf(':')+1,base64encoded.indexOf(';')); // should be image/jpeg
+                    console.log(typeImage);
+                    findImageBasedOnTagsOfImage(encodedImageString);
+                }
+                fileReader.readAsDataURL(fileToLoad);
+            }
         }
 
 
@@ -203,7 +256,6 @@
             })
             .catch(error => console.log('error', error));
         }
-    
 
     </script>
 </head>
@@ -216,11 +268,8 @@
     <!-- Upload Image To S3 -->
     <h2> Upload Image To S3: </h2>
     <form>
-        <label>Image Base64String :</label> <!-- to be modified to upload image code-->
-        <textarea id="base64StringS3"></textarea>
-        
-        
-        <button type="button" onclick="uploadImageToS3(document.getElementById('base64StringS3').value)">Upload To S3</button>
+        <label>Choose File To S3 :</label> <!-- to be modified to upload image code-->
+        <input id="inputFileToS3" type="file" onchange="encodeImageFileToUploadS3();" /></form>
     </form>
     <h2 id="uploadImageToS3"></h2>
 
@@ -241,11 +290,8 @@
     <!-- Find images based on the tags of an image -->
     <h2> Find images based on the tags of an image: </h2>
     <form>
-        <label>Image Base64String :</label>
-        <textarea id="base64StringImage"></textarea>
-        
-        <button type="button" onclick="findImageBasedOnTagsOfImage(document.getElementById('base64StringImage').value)">Find Images From Image </button>
-    </form>
+        <label>Choose Image :</label>        
+        <input id="inputFileToFindTags" type="file" onchange="encodeImageFileToFindTags();" /></form>
     <h2 id="findImageBasedOnTagsOfImage"></h2>
 
     <hr>
