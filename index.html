@@ -52,7 +52,7 @@
                 var base64encoded;
                 var encodedImageString;
                 var typeImage;
-
+                console.log("Image Encoding...");
                 fileReader.onload = function(fileLoadedEvent) {
                     var srcData = fileLoadedEvent.target.result; // <--- data: base64
                     var newImage = document.createElement('img');
@@ -62,6 +62,7 @@
                     encodedImageString = base64encoded.substring(base64encoded.indexOf(',')+1,base64encoded.indexOf('">'));
                     typeImage = base64encoded.substring(base64encoded.indexOf(':')+1,base64encoded.indexOf(';')); // should be image/jpeg
                     console.log(typeImage);
+                    console.log("Image Encoded...");
                     uploadImageToS3(encodedImageString);
                 }
                 fileReader.readAsDataURL(fileToLoad);
@@ -69,7 +70,7 @@
         }
 
 
-         // Call API to upload image to S3
+         // Call API to POST image to S3
          var uploadImageToS3 = (base64String)=>{
             // instantiate a headers object
             var myHeaders = new Headers();
@@ -85,20 +86,22 @@
                 body: raw,
                 redirect: 'follow'
             };
+            console.log("Sending POST request...");
             // make API call with parameters and use promises to get response
-            fetch("https://r3x3kiq5vb.execute-api.us-east-1.amazonaws.com/prod/upload-s3", requestOptions)
+            fetch("https://6iqioqjdmf.execute-api.us-east-2.amazonaws.com/prod/upload-image-to-s3", requestOptions)
             .then(response => response.text())
             .then((result) => {
                 theResult = JSON.parse(result)
                 console.log(theResult)
-                document.getElementById("uploadImageToS3").innerHTML = " Location for Uploaded Image in S3: "  + "<br />" +　theResult.Location
-                console.log(Object.values(theResult))
+                theResult = theResult.Location
+                theResult = theResult.replace('us-east-2.','');
+                document.getElementById("uploadImageToS3").innerHTML = " Location for Uploaded Image in S3: "  + "<br />" +　theResult
             })
             .catch(error => console.log('error', error));
         }
 
 
-        // Call API to upload image to Find images based on the tags
+        // Call API to POST tags to Find images link
         var findImagesBasedOnTags = (tag)=>{
             var myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
@@ -113,7 +116,8 @@
                 body: raw,
                 redirect: 'follow'
             };
-            fetch("https://r3x3kiq5vb.execute-api.us-east-1.amazonaws.com/prod/query", requestOptions)
+            console.log("Sending POST request...");
+            fetch("https://6iqioqjdmf.execute-api.us-east-2.amazonaws.com/prod/query", requestOptions)
             .then(response => response.text())
             .then((result) => {
                 theResult = JSON.parse(result).body
@@ -153,7 +157,7 @@
                 var base64encoded;
                 var encodedImageString;
                 var typeImage;
-
+                console.log("Image Encoding...");
                 fileReader.onload = function(fileLoadedEvent) {
                     var srcData = fileLoadedEvent.target.result; // <--- data: base64
                     var newImage = document.createElement('img');
@@ -163,6 +167,7 @@
                     encodedImageString = base64encoded.substring(base64encoded.indexOf(',')+1,base64encoded.indexOf('">'));
                     typeImage = base64encoded.substring(base64encoded.indexOf(':')+1,base64encoded.indexOf(';')); // should be image/jpeg
                     console.log(typeImage);
+                    console.log("Image Encoded...");
                     findImageBasedOnTagsOfImage(encodedImageString);
                 }
                 fileReader.readAsDataURL(fileToLoad);
@@ -170,7 +175,7 @@
         }
 
 
-        // Call API to upload image to Find images based on the tags of an image
+        // Call API to POST image to Find images based on the tags of an image
         var findImageBasedOnTagsOfImage = (base64String)=>{
             var myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
@@ -182,7 +187,8 @@
                 body: raw,
                 redirect: 'follow'
             };
-            fetch("https://r3x3kiq5vb.execute-api.us-east-1.amazonaws.com/prod/upload-image", requestOptions)
+            console.log("Sending POST request...");
+            fetch("https://6iqioqjdmf.execute-api.us-east-2.amazonaws.com/prod/query/upload-image-detect-tags", requestOptions)
             .then(response => response.text())
             .then((result) => {
                 theResult = JSON.parse(result).body
@@ -191,6 +197,7 @@
                     document.getElementById("findImageBasedOnTagsOfImage").innerHTML =  "Error!" 
                 } else {
                     document.getElementById("findImageBasedOnTagsOfImage").innerHTML = " "
+                    console.log(theResult)
                     theImgList = JSON.parse(theResult).links
                         if (theImgList.length > 0){
                             for (i = 0; theImgList.length > i; i++){
@@ -205,13 +212,12 @@
                         }
 
                 }
-                console.log(JSON.parse(result).body)
             })
             .catch(error => console.log('error', error));
         }
 
 
-        // Call API to add extra tags to an image
+        // Call API to PUT extra tags to an image
         var addExtraTagsToImage = (url, tag)=>{
             var myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
@@ -224,7 +230,8 @@
                 body: raw,
                 redirect: 'follow'
             };
-            fetch("https://r3x3kiq5vb.execute-api.us-east-1.amazonaws.com/prod/query", requestOptions)
+            console.log("Sending PUT request...");
+            fetch("https://6iqioqjdmf.execute-api.us-east-2.amazonaws.com/prod/query", requestOptions)
             .then(response => response.text())
             .then((result) => {
                 theResult = JSON.parse(result).body
@@ -235,7 +242,7 @@
         }
 
 
-        // Call API to delete an image
+        // Call API to DELETE an image
         var deleteImage = (url)=>{
             var myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
@@ -247,7 +254,8 @@
                 body: raw,
                 redirect: 'follow'
             };
-            fetch("https://r3x3kiq5vb.execute-api.us-east-1.amazonaws.com/prod/query", requestOptions)
+            console.log("Sending DELETE request...");
+            fetch("https://6iqioqjdmf.execute-api.us-east-2.amazonaws.com/prod/query", requestOptions)
             .then(response => response.text())
             .then((result) => {
                 theResult = JSON.parse(result).body
