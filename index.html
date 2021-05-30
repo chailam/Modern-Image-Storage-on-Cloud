@@ -43,32 +43,6 @@
         }
     </style>
     <script>
-        // Function to encode image file
-        function encodeImageFileToUploadS3() {
-            var filesSelected = document.getElementById("inputFileToS3").files;
-            if (filesSelected.length > 0) {
-                var fileToLoad = filesSelected[0];
-                var fileReader = new FileReader();
-                var base64encoded;
-                var encodedImageString;
-                var typeImage;
-                console.log("Image Encoding...");
-                fileReader.onload = function(fileLoadedEvent) {
-                    var srcData = fileLoadedEvent.target.result; // <--- data: base64
-                    var newImage = document.createElement('img');
-                    newImage.src = srcData;
-                
-                    base64encoded = newImage.outerHTML;
-                    encodedImageString = base64encoded.substring(base64encoded.indexOf(',')+1,base64encoded.indexOf('">'));
-                    typeImage = base64encoded.substring(base64encoded.indexOf(':')+1,base64encoded.indexOf(';')); // should be image/jpeg
-                    console.log(typeImage);
-                    console.log("Image Encoded...");
-                    uploadImageToS3(encodedImageString);
-                }
-                fileReader.readAsDataURL(fileToLoad);
-            }
-        }
-
 
          // Call API to POST image to S3
          var uploadImageToS3 = (base64String)=>{
@@ -269,7 +243,7 @@
 </head>
 <body>
     <h1>Group 38 Image Detection </h1>
-    <p style="text-align:left;"><a href="https://www.freecodecamp.org/">Sign-In</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://www.freecodecamp.org/">Sign-out</a></p>
+    <p style="text-align:left;"><a href="https://us-east-2.admin.amplifyapp.com/admin/login?appId=d22ntrs5l9foud&backendEnvironmentName=staging">Sign-In</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://us-east-2.admin.amplifyapp.com/admin/login?appId=d22ntrs5l9foud&backendEnvironmentName=staging">Sign-out</a></p>
 
     <hr>
 
