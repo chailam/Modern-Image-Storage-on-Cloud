@@ -22,19 +22,30 @@ def lambda_handler(event, context):
             # print(output)
             
             labels = []
+            scanned_images = []
             
+            if (len(result)) == 0:
+                return {
+                    "isBase64Encoded": False,
+                    "statusCode": 200,
+                    "headers": {"Content-Type": "application/json"},
+                    "body": json.dumps({"links" : scanned_images})
+            }
+                
+                
+                
             for o in result:
                 labels.append(o[0])
             #labels = ["laptop","keyboard"]
                 
             # Remove duplicate at labels
             labels = list(set(labels))
+            print(labels)
                 
             client = boto3.resource("dynamodb")
-            table = client.Table("detectedImage")
+            table = client.Table("detectedImageTags")
             
             items = table.scan()['Items']
-            scanned_images = []
         
             for i in items:
                 tags = i['tag']
@@ -47,7 +58,7 @@ def lambda_handler(event, context):
                         
                 if flag == True:
                     scanned_images.append(i['url'])
-                    print(scanned_images)
+            #print(scanned_images)
                 
             retrun_items = {"links" : scanned_images}
         

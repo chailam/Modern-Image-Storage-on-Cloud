@@ -8,7 +8,7 @@ import base64
 import  json
 
 # construct the argument parse and parse the arguments
-confthres = 0.5
+confthres = 0.3
 nmsthres = 0.1
     
 def get_labels(labels_path):
