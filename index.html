@@ -1,45 +1,56 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
-    <title>Group 38 Image Detection</title>
+    <title>Image Detection</title>
     <!-- Add some CSS to change client UI -->
     <style>
-    
-    body, h1, h2, h3, h4, h5, h6  {
-        background-color: #232F3E;
-        color: white;
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            background-color: #232F3E;
+            color: white;
         }
 
-    a:link, a:active, a:visited {
-        color: gray;
-        background-color: transparent;
-        text-decoration: none;
+        a:link,
+        a:active,
+        a:visited {
+            color: gray;
+            background-color: transparent;
+            text-decoration: none;
         }
 
-    a:hover {
-        color: white;
-        background-color: transparent;
-        text-decoration: underline;
+        a:hover {
+            color: white;
+            background-color: transparent;
+            text-decoration: underline;
         }
 
-    label, p {
-        color: white;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 20px;
-        margin-left: 40px;
-    }
-    button {
-        color: black;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 20px;
-        margin-left: 40px;
+        label,
+        p {
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 20px;
+            margin-left: 40px;
         }
-     input {
-        color: #232F3E;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 20px;
-        margin-left: 20px;
+
+        button {
+            color: black;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 20px;
+            margin-left: 40px;
+        }
+
+        input {
+            color: #232F3E;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 20px;
+            margin-left: 20px;
         }
     </style>
     <script>
@@ -53,17 +64,17 @@
                 var encodedImageString;
                 var typeImage;
                 console.log("Image Encoding...");
-                fileReader.onload = function(fileLoadedEvent) {
+                fileReader.onload = function (fileLoadedEvent) {
                     var srcData = fileLoadedEvent.target.result; // <--- data: base64
                     var newImage = document.createElement('img');
                     newImage.src = srcData;
-                
+
                     base64encoded = newImage.outerHTML;
-                    encodedImageString = base64encoded.substring(base64encoded.indexOf(',')+1,base64encoded.indexOf('">'));
-                    typeImage = base64encoded.substring(base64encoded.indexOf(':')+1,base64encoded.indexOf(';')); // should be image/jpeg
+                    encodedImageString = base64encoded.substring(base64encoded.indexOf(',') + 1, base64encoded.indexOf('">'));
+                    typeImage = base64encoded.substring(base64encoded.indexOf(':') + 1, base64encoded.indexOf(';')); // should be image/jpeg
                     console.log(typeImage);
                     console.log("Image Encoded...");
-                    uploadImageToS3(encodedImageString,token);
+                    uploadImageToS3(encodedImageString, token);
                 }
                 fileReader.readAsDataURL(fileToLoad);
             }
@@ -71,16 +82,16 @@
 
 
 
-         // Call API to POST image to S3
-         var uploadImageToS3 = (base64String,token)=>{
+        // Call API to POST image to S3
+        var uploadImageToS3 = (base64String, token) => {
             console.log(token);
             // instantiate a headers object
             var myHeaders = new Headers();
             // add content type header to object
-            myHeaders.append("Authorization",token);
+            myHeaders.append("Authorization", token);
             myHeaders.append("Content-Type", "application/json");
             // using built in JSON utility package turn object to string and store in a variable
-            var raw = JSON.stringify({"based64string":base64String});
+            var raw = JSON.stringify({ "based64string": base64String });
             let theResult;
             // create a JSON object with parameters for API call and store in a variable
             var requestOptions = {
@@ -92,35 +103,35 @@
             console.log("Sending POST request...");
             // make API call with parameters and use promises to get response
             fetch("https://6iqioqjdmf.execute-api.us-east-2.amazonaws.com/prod/upload-image-to-s3", requestOptions)
-            .then(response =>response.text())
-            .then((result) => {
-                theResult = JSON.parse(result);
-                console.log(theResult);
-                if (theResult.message == "Unauthorized"){
-                    document.getElementById("uploadImageToS3").innerHTML = "Unauthorized, please check your id-token or relogin to get new id-token";
-                }
-                else{
-                    theResult = theResult.Location;
-                    theResult = theResult.replace('us-east-2.','');
-                    document.getElementById("uploadImageToS3").innerHTML = " Location for Uploaded Image in S3: "  + "<br />" +　theResult;
-                }
-            })
-            .catch(error => {
-                console.log('error', error);
-                document.getElementById("uploadImageToS3").innerHTML = " Error: " + error;
-            });
+                .then(response => response.text())
+                .then((result) => {
+                    theResult = JSON.parse(result);
+                    console.log(theResult);
+                    if (theResult.message == "Unauthorized") {
+                        document.getElementById("uploadImageToS3").innerHTML = "Unauthorized, please check your id-token or relogin to get new id-token";
+                    }
+                    else {
+                        theResult = theResult.Location;
+                        theResult = theResult.replace('us-east-2.', '');
+                        document.getElementById("uploadImageToS3").innerHTML = " Location for Uploaded Image in S3: " + "<br />" + theResult;
+                    }
+                })
+                .catch(error => {
+                    console.log('error', error);
+                    document.getElementById("uploadImageToS3").innerHTML = " Error: " + error;
+                });
         }
 
 
         // Call API to POST tags to Find images link
-        var findImagesBasedOnTags = (tag, token)=>{
+        var findImagesBasedOnTags = (tag, token) => {
             console.log(token);
             var myHeaders = new Headers();
-            myHeaders.append("Authorization",token);
+            myHeaders.append("Authorization", token);
             myHeaders.append("Content-Type", "application/json");
             // process the tag value
             var tagArray = tag.split(",");
-            var raw = JSON.stringify({"tags":tagArray});
+            var raw = JSON.stringify({ "tags": tagArray });
             let theResult;
             let theStatus;
             var requestOptions = {
@@ -131,39 +142,39 @@
             };
             console.log("Sending POST request...");
             fetch("https://6iqioqjdmf.execute-api.us-east-2.amazonaws.com/prod/query", requestOptions)
-            .then(response => response.text())
-            .then((result) => {
-                console.log(result);
-                theResult = JSON.parse(result);
-                if (theResult.message == "Unauthorized"){
-                    document.getElementById("findImageBasedOnTags").innerHTML = "Unauthorized, please check your id-token or relogin to get new id-token";
-                }
-                else{
-                    theResult = JSON.parse(result).body;
-                    theStatus = JSON.parse(result).statusCode;
-                    console.log(theStatus);
-                    if (theStatus == 200){
-                        document.getElementById("findImageBasedOnTags").innerHTML = " ";
-                        theImgList = JSON.parse(theResult).links;
-                            if (theImgList.length > 0){
-                                for (i = 0; theImgList.length > i; i++){
-                                var img = new Image(200, 200);
-                                img.src = theImgList[i];
+                .then(response => response.text())
+                .then((result) => {
+                    console.log(result);
+                    theResult = JSON.parse(result);
+                    if (theResult.message == "Unauthorized") {
+                        document.getElementById("findImageBasedOnTags").innerHTML = "Unauthorized, please check your id-token or relogin to get new id-token";
+                    }
+                    else {
+                        theResult = JSON.parse(result).body;
+                        theStatus = JSON.parse(result).statusCode;
+                        console.log(theStatus);
+                        if (theStatus == 200) {
+                            document.getElementById("findImageBasedOnTags").innerHTML = " ";
+                            theImgList = JSON.parse(theResult).links;
+                            if (theImgList.length > 0) {
+                                for (i = 0; theImgList.length > i; i++) {
+                                    var img = new Image(200, 200);
+                                    img.src = theImgList[i];
 
-                                var place = document.getElementById("findImageBasedOnTags");
-                                place.appendChild(img);
+                                    var place = document.getElementById("findImageBasedOnTags");
+                                    place.appendChild(img);
                                 }
                             } else {
                                 document.getElementById("findImageBasedOnTags").innerHTML = "No image found with these tags";
                             }
-                        console.log(JSON.parse(result).body)
+                            console.log(JSON.parse(result).body)
+                        }
                     }
-                }
-            })
-            .catch(error => {
-                console.log('error', error);
-                document.getElementById("findImageBasedOnTags").innerHTML = " Error: " + error;
-            });
+                })
+                .catch(error => {
+                    console.log('error', error);
+                    document.getElementById("findImageBasedOnTags").innerHTML = " Error: " + error;
+                });
         }
 
 
@@ -178,17 +189,17 @@
                 var encodedImageString;
                 var typeImage;
                 console.log("Image Encoding...");
-                fileReader.onload = function(fileLoadedEvent) {
+                fileReader.onload = function (fileLoadedEvent) {
                     var srcData = fileLoadedEvent.target.result; // <--- data: base64
                     var newImage = document.createElement('img');
                     newImage.src = srcData;
-                
+
                     base64encoded = newImage.outerHTML;
-                    encodedImageString = base64encoded.substring(base64encoded.indexOf(',')+1,base64encoded.indexOf('">'));
-                    typeImage = base64encoded.substring(base64encoded.indexOf(':')+1,base64encoded.indexOf(';')); // should be image/jpeg
+                    encodedImageString = base64encoded.substring(base64encoded.indexOf(',') + 1, base64encoded.indexOf('">'));
+                    typeImage = base64encoded.substring(base64encoded.indexOf(':') + 1, base64encoded.indexOf(';')); // should be image/jpeg
                     console.log(typeImage);
                     console.log("Image Encoded...");
-                    findImageBasedOnTagsOfImage(encodedImageString,token);
+                    findImageBasedOnTagsOfImage(encodedImageString, token);
                 }
                 fileReader.readAsDataURL(fileToLoad);
             }
@@ -196,12 +207,12 @@
 
 
         // Call API to POST image to Find images based on the tags of an image
-        var findImageBasedOnTagsOfImage = (base64String,token)=>{
+        var findImageBasedOnTagsOfImage = (base64String, token) => {
             console.log(token);
             var myHeaders = new Headers();
-            myHeaders.append("Authorization",token);
+            myHeaders.append("Authorization", token);
             myHeaders.append("Content-Type", "application/json");
-            var raw = JSON.stringify({"based64string":base64String});
+            var raw = JSON.stringify({ "based64string": base64String });
             let theResult;
             var requestOptions = {
                 method: 'POST',
@@ -211,50 +222,50 @@
             };
             console.log("Sending POST request...");
             fetch("https://6iqioqjdmf.execute-api.us-east-2.amazonaws.com/prod/query/upload-image-detect-tags", requestOptions)
-            .then(response => response.text())
-            .then((result) => {
-                console.log(result);
-                theResult = JSON.parse(result);
-                if (theResult.message == "Unauthorized"){
-                    document.getElementById("findImageBasedOnTagsOfImage").innerHTML = "Unauthorized, please check your id-token or relogin to get new id-token";
-                }
-                else{
-                    theResult = JSON.parse(result).body;
-                    theStatus = JSON.parse(result).statusCode;
-                    if (theStatus == 200){
-                        document.getElementById("findImageBasedOnTagsOfImage").innerHTML = " ";
-                        console.log(theResult);
-                        theImgList = JSON.parse(theResult).links
-                            if (theImgList.length > 0){
-                                for (i = 0; theImgList.length > i; i++){
-                                var img = new Image(200, 200);
-                                img.src = theImgList[i];
+                .then(response => response.text())
+                .then((result) => {
+                    console.log(result);
+                    theResult = JSON.parse(result);
+                    if (theResult.message == "Unauthorized") {
+                        document.getElementById("findImageBasedOnTagsOfImage").innerHTML = "Unauthorized, please check your id-token or relogin to get new id-token";
+                    }
+                    else {
+                        theResult = JSON.parse(result).body;
+                        theStatus = JSON.parse(result).statusCode;
+                        if (theStatus == 200) {
+                            document.getElementById("findImageBasedOnTagsOfImage").innerHTML = " ";
+                            console.log(theResult);
+                            theImgList = JSON.parse(theResult).links
+                            if (theImgList.length > 0) {
+                                for (i = 0; theImgList.length > i; i++) {
+                                    var img = new Image(200, 200);
+                                    img.src = theImgList[i];
 
-                                var place = document.getElementById("findImageBasedOnTagsOfImage");
-                                place.appendChild(img);
+                                    var place = document.getElementById("findImageBasedOnTagsOfImage");
+                                    place.appendChild(img);
                                 }
                             } else {
                                 document.getElementById("findImageBasedOnTagsOfImage").innerHTML = "No image found with these tags";
                             }
 
+                        }
                     }
-                }
-            })
-            .catch(error => {
-                console.log('error', error);
-                document.getElementById("findImageBasedOnTagsOfImage").innerHTML = "Error: " + error;
-            });
+                })
+                .catch(error => {
+                    console.log('error', error);
+                    document.getElementById("findImageBasedOnTagsOfImage").innerHTML = "Error: " + error;
+                });
         }
 
 
         // Call API to PUT extra tags to an image
-        var addExtraTagsToImage = (url, tag,token)=>{
+        var addExtraTagsToImage = (url, tag, token) => {
             console.log(token);
             var myHeaders = new Headers();
-            myHeaders.append("Authorization",token);
+            myHeaders.append("Authorization", token);
             myHeaders.append("Content-Type", "application/json");
             var tagArray = tag.split(",");
-            var raw = JSON.stringify({"url":url,"tags":tagArray});
+            var raw = JSON.stringify({ "url": url, "tags": tagArray });
             let theResult;
             var requestOptions = {
                 method: 'PUT',
@@ -264,33 +275,33 @@
             };
             console.log("Sending PUT request...");
             fetch("https://6iqioqjdmf.execute-api.us-east-2.amazonaws.com/prod/query", requestOptions)
-            .then(response => response.text())
-            .then((result) => {
-                console.log(result);
-                theResult = JSON.parse(result);
-                if (theResult.message == "Unauthorized"){
-                    document.getElementById("addExtraTagsToImage").innerHTML = "Unauthorized, please check your id-token or relogin to get new id-token";
-                }
-                else{
-                    theResult = JSON.parse(result).body;
-                    document.getElementById("addExtraTagsToImage").innerHTML = "Result for Add extra tags to an image:" + "<br />" + theResult ;
-                    console.log(JSON.parse(result).body);
-                }
-            })
-            .catch(error => {
-                console.log('error', error);
-                document.getElementById("addExtraTagsToImage").innerHTML = "Error: " + error;
-            });
+                .then(response => response.text())
+                .then((result) => {
+                    console.log(result);
+                    theResult = JSON.parse(result);
+                    if (theResult.message == "Unauthorized") {
+                        document.getElementById("addExtraTagsToImage").innerHTML = "Unauthorized, please check your id-token or relogin to get new id-token";
+                    }
+                    else {
+                        theResult = JSON.parse(result).body;
+                        document.getElementById("addExtraTagsToImage").innerHTML = "Result for Add extra tags to an image:" + "<br />" + theResult;
+                        console.log(JSON.parse(result).body);
+                    }
+                })
+                .catch(error => {
+                    console.log('error', error);
+                    document.getElementById("addExtraTagsToImage").innerHTML = "Error: " + error;
+                });
         }
 
 
         // Call API to DELETE an image
-        var deleteImage = (url,token)=>{
+        var deleteImage = (url, token) => {
             console.log(token);
             var myHeaders = new Headers();
-            myHeaders.append("Authorization",token);
+            myHeaders.append("Authorization", token);
             myHeaders.append("Content-Type", "application/json");
-            var raw = JSON.stringify({"url":url});
+            var raw = JSON.stringify({ "url": url });
             let theResult;
             var requestOptions = {
                 method: 'DELETE',
@@ -300,37 +311,41 @@
             };
             console.log("Sending DELETE request...");
             fetch("https://6iqioqjdmf.execute-api.us-east-2.amazonaws.com/prod/query", requestOptions)
-            .then(response => response.text())
-            .then((result) => {
-                console.log(result);
-                theResult = JSON.parse(result);
-                if (theResult.message == "Unauthorized"){
-                    document.getElementById("deleteAnImage").innerHTML = "Unauthorized, please check your id-token or relogin to get new id-token";
-                }
-                else{
-                    theResult = JSON.parse(result).body;
-                    document.getElementById("deleteAnImage").innerHTML = "Result for Delete an image:" + "<br />"  + theResult ;
-                    console.log(JSON.parse(result).body);
-                }
-            })
-            .catch(error => {
-                console.log('error', error);
-                document.getElementById("deleteAnImage").innerHTML = "Error: " + error;
-            });
+                .then(response => response.text())
+                .then((result) => {
+                    console.log(result);
+                    theResult = JSON.parse(result);
+                    if (theResult.message == "Unauthorized") {
+                        document.getElementById("deleteAnImage").innerHTML = "Unauthorized, please check your id-token or relogin to get new id-token";
+                    }
+                    else {
+                        theResult = JSON.parse(result).body;
+                        document.getElementById("deleteAnImage").innerHTML = "Result for Delete an image:" + "<br />" + theResult;
+                        console.log(JSON.parse(result).body);
+                    }
+                })
+                .catch(error => {
+                    console.log('error', error);
+                    document.getElementById("deleteAnImage").innerHTML = "Error: " + error;
+                });
         }
 
     </script>
 </head>
-<body>
-    <h1>Group 38 Image Detection </h1>
-    <p style="text-align:left;"><a href="https://nsa-test-fit5225.auth.us-east-2.amazoncognito.com/login?client_id=5boslfl6k2kn7t5jeu7fsbfn30&response_type=token&scope=openid+profile&redirect_uri=https://6iqioqjdmf.execute-api.us-east-2.amazonaws.com/prod">Sign-In</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://nsa-test-fit5225.auth.us-east-2.amazoncognito.com/login?client_id=5boslfl6k2kn7t5jeu7fsbfn30&response_type=token&scope=openid+profile&redirect_uri=https://6iqioqjdmf.execute-api.us-east-2.amazonaws.com/prod">Sign-out</a></p>
 
-  <a href id="LoginWithAmazon">
-    <img border="0" alt="Login with Amazon"
-        src="https://images-na.ssl-images-amazon.com/images/G/01/lwa/btnLWA_gold_156x32.png"
-        width="156" height="32" />
+<body>
+    <h1>Image Detection </h1>
+    <p style="text-align:left;"><a
+            href="https://nsa-test-fit5225.auth.us-east-2.amazoncognito.com/login?client_id=5boslfl6k2kn7t5jeu7fsbfn30&response_type=token&scope=openid+profile&redirect_uri=https://6iqioqjdmf.execute-api.us-east-2.amazonaws.com/prod">Sign-In</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
+            href="https://nsa-test-fit5225.auth.us-east-2.amazoncognito.com/login?client_id=5boslfl6k2kn7t5jeu7fsbfn30&response_type=token&scope=openid+profile&redirect_uri=https://6iqioqjdmf.execute-api.us-east-2.amazonaws.com/prod">Sign-out</a>
+    </p>
+
+    <a href id="LoginWithAmazon">
+        <img border="0" alt="Login with Amazon"
+            src="https://images-na.ssl-images-amazon.com/images/G/01/lwa/btnLWA_gold_156x32.png" width="156"
+            height="32" />
         <label>Unavailable Due to enterprise only</label>
- </a>
+    </a>
 
 
     <hr>
@@ -341,7 +356,9 @@
         <label>Token :</label>
         <input type="text" id="inputFileToS3Token">
         <label>Choose File To S3 :</label> <!-- to be modified to upload image code-->
-        <input id="inputFileToS3" type="file" onchange="encodeImageFileToUploadS3(document.getElementById('inputFileToS3Token').value);" /></form>
+        <input id="inputFileToS3" type="file"
+            onchange="encodeImageFileToUploadS3(document.getElementById('inputFileToS3Token').value);" />
+    </form>
     </form>
     <h2 id="uploadImageToS3"></h2>
 
@@ -355,8 +372,10 @@
 
         <label>Tag (split by comma) :</label>
         <input type="text" id="findImageTag">
-        
-        <button type="button" onclick="findImagesBasedOnTags(document.getElementById('findImageTag').value, document.getElementById('findImageToken').value)">Find Images From Tags</button>
+
+        <button type="button"
+            onclick="findImagesBasedOnTags(document.getElementById('findImageTag').value, document.getElementById('findImageToken').value)">Find
+            Images From Tags</button>
     </form>
     <h2 id="findImageBasedOnTags"></h2>
 
@@ -368,8 +387,10 @@
         <label>Token :</label>
         <input type="text" id="inputFileToFindTagsToken">
 
-        <label>Choose Image :</label>        
-        <input id="inputFileToFindTags" type="file" onchange="encodeImageFileToFindTags(document.getElementById('inputFileToFindTagsToken').value);" /></form>
+        <label>Choose Image :</label>
+        <input id="inputFileToFindTags" type="file"
+            onchange="encodeImageFileToFindTags(document.getElementById('inputFileToFindTagsToken').value);" />
+    </form>
     <h2 id="findImageBasedOnTagsOfImage"></h2>
 
     <hr>
@@ -385,8 +406,10 @@
 
         <label>Tag (split by comma) :</label>
         <input type="text" id="tagAddTag">
-        
-        <button type="button" onclick="addExtraTagsToImage(document.getElementById('urlAddTag').value,document.getElementById('tagAddTag').value,document.getElementById('addTagToken').value)">Add Tags</button>
+
+        <button type="button"
+            onclick="addExtraTagsToImage(document.getElementById('urlAddTag').value,document.getElementById('tagAddTag').value,document.getElementById('addTagToken').value)">Add
+            Tags</button>
     </form>
     <h2 id="addExtraTagsToImage"></h2>
 
@@ -400,9 +423,12 @@
 
         <label>URL :</label>
         <input type="text" id="urlDeleteImage">
-        <button type="button" onclick="deleteImage(document.getElementById('urlDeleteImage').value,document.getElementById('urlDeleteImageToken').value)">Delete Image</button>
+        <button type="button"
+            onclick="deleteImage(document.getElementById('urlDeleteImage').value,document.getElementById('urlDeleteImageToken').value)">Delete
+            Image</button>
     </form>
     <h2 id="deleteAnImage"></h2>
 
 </body>
+
 </html>

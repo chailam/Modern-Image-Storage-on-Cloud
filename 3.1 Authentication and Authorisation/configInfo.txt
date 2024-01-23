@@ -1,8 +1,0 @@
-Pool Id 
-us-east-2_IeWLcGrQw
-
-Pool ARN 
-arn:aws:cognito-idp:us-east-2:895029029399:userpool/us-east-2_IeWLcGrQw
-
-App client fit5225-client ID 
-5boslfl6k2kn7t5jeu7fsbfn30
